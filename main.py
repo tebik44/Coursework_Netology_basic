@@ -29,13 +29,20 @@ class VK:
         return respoun
 
     def transform_dict_vk(self):
-        new_dict = VK.photos_get(self)['response']['items'][1]['likes']['count']
-        new_dict = VK.photos_get(self)['response']['items'][1]['sizes'][-1]['url']
-        pprint(new_dict)
+        new_dict = VK.photos_get(self)
+        reforge_dict = []
+        new = len(new_dict['response']['items'])
+        for count in range(0, len(new_dict['response']['items'])):
+            reforge_dict.append((VK.photos_get(self)['response']['items'][int(count)]['sizes'][-1]['url'], VK.photos_get(self)['response']['items'][int(count)]['likes']['count']))
+
+        pprint(reforge_dict)
+        return reforge_dict
 
 
 
 class Yandex_disk():
+    base_host = 'https://cloud-api.yandex.net/'
+
     def __init__(self, TOKEN_YANDEX):
         self.TOKEN_YANDEX = TOKEN_YANDEX
 
@@ -47,12 +54,18 @@ class Yandex_disk():
         }
 
 
-    def Uploud_to_disk_vk_photo(self):
-        url = ''
+    def upload_from_internet(self, dict_url):
+        uri = 'v1/disk/resources/upload/new_vk'
+        request_url = self.base_host + uri
+        for item in dict_url:
+            params = {'url': item[0], 'path': f'/{item[1]}.jpg'}
+            response = requests.post(request_url, params=params, headers=self.get_headers_authorization())
+            print(response.status_code)
+            print(response.json())
 
 
 if __name__ == '__main__':
     yandex = Yandex_disk(TOKEN_YANDEX)
     vk = VK(TOKEN_VK)
     vk.photos_get()
-    vk.transform_dict_vk()
+    yandex.upload_from_internet(vk.transform_dict_vk())
