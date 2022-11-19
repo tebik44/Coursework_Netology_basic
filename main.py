@@ -30,7 +30,6 @@ class VK:
         url = '/photos.get'
 
         respoun = requests.get(self.base_host + url, params=self.Get_params()).json()
-        # pprint(respoun)
         return respoun
 
     def transform_dict_vk(self):
@@ -39,12 +38,13 @@ class VK:
 
         bar = IncrementalBar('---', max=len(new_dict['response']['items']))
         for count in range(0, len(new_dict['response']['items'])):
+            time.sleep(0.15)
             bar.next()
             reforge_dict.append((new_dict['response']['items'][count]['sizes'][-1]['url'],
                                  new_dict['response']['items'][count]['likes']['count']))
 
         bar.finish()
-
+        print("Загрузка из вк успешна!")
         # pprint(reforge_dict)
         return reforge_dict
 
@@ -73,17 +73,21 @@ class Yandex_disk():
         check_folder = requests.get(self.base_host + uri_folder, params=path)
         if check_folder.status_code == 401:
             folder = requests.put(self.base_host + uri_folder, params=path, headers=self.get_headers_authorization())
-            # print(folder.status_code)
+            print(folder.status_code)
             # print(folder.json())
+        bar = IncrementalBar('---', max=len(reforge_dict))
         for item in reforge_dict:
             params = {'url': item[0], 'path': f'/{folder_name}/{item[1]}.jpg'}
             response = requests.post(self.base_host + uri_uploud, params=params, headers=self.get_headers_authorization())
+            bar.next()
             # print(response.status_code)
             # print(response.json())
-        print('Все готово!')
+        bar.finish()
+        print('Все перенеслось в диск! \nВсе готово!')
 
 
 if __name__ == '__main__':
-    yandex = Yandex_disk(TOKEN_YANDEX)
+    token = input('Укажите свой api token yandex для закрузки: ')
+    yandex = Yandex_disk(token)
     vk = VK(TOKEN_VK)
     yandex.upload_from_internet(vk.transform_dict_vk())
