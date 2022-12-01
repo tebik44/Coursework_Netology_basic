@@ -6,34 +6,55 @@ from progress.bar import IncrementalBar
 import time
 
 
-class VK:
+class Vk:
     base_host = 'https://api.vk.com/method'
 
     def __init__(self, TOKEN_VK):
         self.TOKEN_VK = TOKEN_VK
-        self.Users_id = input('Введите id пользователя без пробелов и тому подобного (пример: 329407357) - ')
+        self.users_id = input('Введите id пользователя без пробелов и тому подобного (пример: 329407357) - ')
+        if self.users_id.isdigit() == False:
+            Vk.user_id_get(self)
         self.count_photo = input('Введите, сколько фото вы хотите перенести - ')
 
 
-    def Get_params(self):
+    def get_params_from_user_id(self):
+        return {
+            'access_token': {self.TOKEN_VK},
+            'v': '5.131',
+            'user_ids': {self.users_id}
+        }
+
+    def get_params_from_photo(self):
          return {
             'access_token': {self.TOKEN_VK},
             'v': '5.131',
-            'owner_id': {self.Users_id},
+            'owner_id': {self.users_id},
             'album_id': 'profile',
             'extended': '1',
             'photo_sizes': '1',
             'count': {self.count_photo}
         }
 
+
+    def user_id_get(self):
+        respoun = requests.get(self.base_host + '/users.get', params=self.get_params_from_user_id()).json()
+        pprint(respoun)
+        user_id = respoun['response'][0]['id']
+        print(user_id)
+        self.users_id = user_id
+
     def photos_get(self):
+        if self.users_id is not int:
+            Vk.user_id_get(self)
         url = '/photos.get'
 
-        respoun = requests.get(self.base_host + url, params=self.Get_params()).json()
+        respoun = requests.get(self.base_host + url, params=self.get_params_from_photo()).json()
+        pprint(respoun)
+
         return respoun
 
     def transform_dict_vk(self):
-        new_dict = VK.photos_get(self)
+        new_dict = Vk.photos_get(self)
         reforge_dict = []
 
         bar = IncrementalBar('---', max=len(new_dict['response']['items']))
@@ -51,6 +72,7 @@ class VK:
 
 
 class Yandex_disk():
+
     base_host = 'https://cloud-api.yandex.net/'
 
     def __init__(self, TOKEN_YANDEX):
@@ -87,7 +109,8 @@ class Yandex_disk():
 
 
 if __name__ == '__main__':
-    token = input('Укажите свой api token yandex для закрузки: ')
-    yandex = Yandex_disk(token)
-    vk = VK(TOKEN_VK)
-    yandex.upload_from_internet(vk.transform_dict_vk())
+    # token = input('Укажите свой api token yandex для закрузки: ')
+    yandex = Yandex_disk(TOKEN_YANDEX)
+    vk = Vk(TOKEN_VK)
+    vk.photos_get()
+    # yandex.upload_from_internet(vk.transform_dict_vk())
