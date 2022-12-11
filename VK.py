@@ -48,46 +48,42 @@ class Vk:
 
         return respoun
 
-    # def transform_dict_vk(self):
-    #
-    #     new_dict = Vk.photos_get(self)
-    #     reforge_dict = []
-    #
-    #     for count in tqdm(range(0, len(new_dict['response']['items']))):
-    #         sleep(0.3)
-    #         if new_dict['response']['items'][count]['likes']['count'] == any(reforge_dict):
-    #             date = datetime.utcfromtimestamp(new_dict['response']['items'][count]['date']).strftime('%Y-%m-%d %H:%M:%S')
-    #             reforge_dict.append((new_dict['response']['items'][count]['sizes'][-1]['url'],
-    #                                  new_dict['response']['items'][count]['likes']['count'] + "-" + date))
-    #         else:
-    #             reforge_dict.append((new_dict['response']['items'][count]['sizes'][-1]['url'],
-    #                                 new_dict['response']['items'][count]['likes']['count']))
-    #
-    #     print("Загрузка из вк успешна!")
-    #     pprint(reforge_dict)
-    #     return reforge_dict
-
-
     def transform_dict_vk(self):
+
         new_dict = Vk.photos_get(self)
+        reforge_dict = []
 
-        reforge_dict = {}
-        for count in tqdm(range(len(new_dict['response']['items']))):
-            if str(new_dict['response']['items'][count]['likes']['count']) not in reforge_dict:
-                reforge_dict[new_dict['response']['items'][count]['likes']['count']] = \
-                    new_dict['response']['items'][count]['sizes'][-1]['url']
-
-            else:
-                date = datetime.utcfromtimestamp(new_dict['response']['items'][count]['date'])\
-                    .strftime('%Y-%m-%d %H:%M:%S')
-                reforge_dict[new_dict['response']['items'][count]['likes']['count'] + " | " + date] = \
-                    new_dict['response']['items'][count]['sizes'][-1]['url']
-
+        for count in tqdm(range(0, len(new_dict['response']['items']))):
+            sleep(0.2)
+            date = datetime.utcfromtimestamp(new_dict['response']['items'][count]['date']).strftime('%Y-%m-%d %H.%M.%S')
+            reforge_dict.append((new_dict['response']['items'][count]['sizes'][-1]['url'],
+                                 new_dict['response']['items'][count]['likes']['count'], date, new_dict['response']['items'][count]['sizes'][-1]['type']))
 
 
         print("Загрузка из вк успешна!")
-        pprint(reforge_dict)
         return reforge_dict
+
+
+    # def transform_dict_vk(self):
+    #     new_dict = Vk.photos_get(self)
+    #
+    #     reforge_dict = {}
+    #     for count in tqdm(range(len(new_dict['response']['items']))):
+    #         if str(new_dict['response']['items'][count]['likes']['count']) not in reforge_dict:
+    #             reforge_dict[new_dict['response']['items'][count]['likes']['count']] = \
+    #                 new_dict['response']['items'][count]['sizes'][-1]['url']
+    #
+    #         else:
+    #             date = datetime.utcfromtimestamp(new_dict['response']['items'][count]['date'])\
+    #                 .strftime('%Y-%m-%d %H:%M:%S')
+    #             reforge_dict[new_dict['response']['items'][count]['likes']['count'] + " | " + date] = \
+    #                 new_dict['response']['items'][count]['sizes'][-1]['url']
+
+        #
+        #
+        # print("Загрузка из вк успешна!")
+        # pprint(reforge_dict)
+        # return reforge_dict
 
 
 

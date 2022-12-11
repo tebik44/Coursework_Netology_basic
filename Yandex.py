@@ -21,16 +21,24 @@ class Yandex_disk():
         uri_uploud = 'v1/disk/resources/upload'
         uri_folder = 'v1/disk/resources'
         path = {'path': folder_name}
+        info_about_photo = []
+        for item in reforge_dict:
+            info_about_photo.append({'file_name': f"{item[1]} | {item[2]}.jpg",
+                                     'size': item[3]})
 
         check_folder = requests.get(self.base_host + uri_folder, params=path)
+
         if check_folder.status_code == 401:
             folder = requests.put(self.base_host + uri_folder, params=path, headers=self.get_headers_authorization())
-            print(folder.status_code)
+            # print(folder.status_code)
             # print(folder.json())
         for item in tqdm(reforge_dict):
-            time.sleep(0.3)
-            params = {'url': item[0], 'path': f'/{folder_name}/{item[1]}.jpg'}
+            time.sleep(0.15)
+            params = {'url': item[0], 'path': f'/{folder_name}/{item[1]} | {item[2]}.jpg'}
             response = requests.post(self.base_host + uri_uploud, params=params, headers=self.get_headers_authorization())
             # print(response.status_code)
             # print(response.json())
-        print('Все перенеслось в диск! \nВсе готово!')
+
+        print('Все перенеслось в диск! \nВсе готово!\n')
+        print('Данные об загруженных фото:')
+        pprint(info_about_photo)
