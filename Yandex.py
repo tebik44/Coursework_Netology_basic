@@ -41,4 +41,4 @@ class Yandex_disk():
 
         print('Все перенеслось в диск! \nВсе готово!\n')
         print('Данные об загруженных фото:')
-        pprint(info_about_photo)
+        return info_about_photo
